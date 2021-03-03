@@ -1,132 +1,162 @@
+import json
 import logging
+import secrets
 import time
 import threading
+from enum import Enum
+from multiprocessing import Process
+from pathlib import Path
 
 from subprocess import TimeoutExpired
 from threading import Thread
-from typing import Mapping, Tuple, Optional
+from typing import Mapping, Tuple, Optional, List
 
+from fasteners import InterProcessLock
 from selenium.common.exceptions import TimeoutException
 
 from whatsappstract.whatsapp import Whatsapp
 
-class WhatsappSession:
-    """Wrapper around the Whatsapp class to remember state and do background scraping"""
-    def __init__(self, n_chats=2):
-        self.started_time = time.time()
-        self.w = Whatsapp(screenshot_folder="/tmp")
-        self._last_qr: str = None
-        self.links = None
-        self.lock = threading.Lock()
-        self._thread: Thread = None
-        self.status: str = "NOTSTARTED"
-        self._progress: int = None
-        self._message: str = None
-        self.n_chats: int = n_chats
 
-    def get_qr(self) -> str:
-        """Go to whatsapp web and get the QR code"""
-        self._last_qr = self.w.get_qr()
-        return self._last_qr
+class Status(Enum):
+    ERROR = -1
+    STARTING = 0
+    WAITING_SCAN = 1
+    SCRAPING = 2
+    DONE = 3
 
-    def get_qr_status(self) -> dict:
-        """Check if the user logged in and/or if a new QR code is displayed"""
-        if self.w.is_qr_scanned():
-            return {"status": "READY"}
+#TODO: Periodic cleanup temporary folders
+class FolderIPC:
+    """
+    Inter-process communication between flask and whatsapp process based on files in a temporary folder
+    (should be placed on RAM disk to ensure no sensitive data is written to disk)
+    """
+
+    @classmethod
+    def create(cls, id: str):
+        folder = Path("/tmp") / id
+        folder.mkdir(mode=0o700)
+        return cls(id)
+
+    def __init__(self, id: str):
+        folder = Path("/tmp") / id
+        self.status = folder/'status.json'
+        self.qr = folder/'qr.png'
+        self.result = folder/'result.jsonl'
+        self.info = folder/'info.json'
+        self.lock = InterProcessLock(folder / 'lock.file')
+
+    def set_status(self, status: Status, **kargs):
+        logging.info(f"Status: {status}")
+        status_dict = dict(status=status.name, **kargs)
+        with self.lock:
+            with self.status.open('w') as f:
+                json.dump(status_dict, f)
+
+    def get_status(self) -> dict:
+        with self.lock:
+            with self.status.open('r') as f:
+                status = json.load(f)
+        return status
+
+    def write_qr(self, qr: str):
+        logging.info(f"Writing QR to {self.qr}")
+        with self.lock:
+            with self.qr.open('w') as f:
+                f.write(qr)
+
+    def get_qr(self):
+        with self.lock:
+            with self.qr.open('r') as f:
+                return f.read()
+
+    def append_links(self, links: List[dict]):
+        with self.lock:
+            with self.result.open('a') as f:
+                for link in links:
+                    json.dump(link, f)
+                    f.write("\n")
+
+    def get_links(self) -> str:
+        with self.lock:
+            with self.result.open('r') as f:
+                return f.read()
+
+
+class WhatsappProcess(Process):
+    def __init__(self, folder: FolderIPC, n_chats: int):
+        super().__init__()
+        self.folder = folder
+        self.folder.set_status(Status.STARTING)
+        self.n_chats = n_chats
+
+    def run(self):
         try:
-            qr = self.w.get_qr()
-        except TimeoutException:
-            # Check if the app was loading the ready screen and is ready now
-            if self.w.is_qr_scanned():
-                return {"status": "READY"}
+            self.w = Whatsapp(screenshot_folder="/tmp")
+            self.wait_for_qr()
+            self.do_scrape()
+            self.folder.set_status(Status.DONE)
+        except Exception as e:
+            self.folder.set_status(Status.ERROR, message=f"{type(e)}: {e}")
             raise
-        if qr == self._last_qr:
-            return {"status": "WAITING"}
-        else:
-            self._last_qr = qr
-            return {"status": "REFRESH", "qr": qr}
+
+    def wait_for_qr(self):
+        last_qr = None
+        qr_number = 0
+        while not self.w.is_qr_scanned():
+            logging.info("Checking QR code")
+            try:
+                qr = self.w.get_qr()
+            except TimeoutException:
+                # Check if the app was loading the ready screen and is ready now, otherwise re-raise
+                if self.w.is_qr_scanned():
+                    return
+                raise
+            if qr != last_qr:
+                self.folder.write_qr(qr)
+                last_qr = qr
+                qr_number += 1
+                self.folder.set_status(Status.WAITING_SCAN, progress=qr_number)
+            time.sleep(0.5)
 
     def do_scrape(self):
-        logging.info("Starting scraper")
-        with self.lock:
-            if self.links is not None:
-                raise ValueError("Scraping already in progress")
-            self.links = []
-            self.status = "STARTED"
-            self._progress = 0
-        try:
-            self._do_scrape()
-        except Exception as e:
-            logging.exception("Error in scraper thread")
-            with self.lock:
-                self.status = "ERROR"
-                self._message = str(e)
-                self._progress = 0
-        else:
-            logging.info("Done!")
-            with self.lock:
-                self.status = "DONE"
-                self._message = f"Done, found {len(self.links)} in total"
-                self._progress = 100
-        finally:
-            self.w.quit_browser()
-            self.w = None
-
-    def _do_scrape(self):
-        time.sleep(3)
-        for i, chat in enumerate(self.w.get_all_chats()):
-            if i >= self.n_chats:
+        self.folder.set_status(Status.SCRAPING, progress=0, message="Starting scraping")
+        nlinks = 0
+        for i, chat in enumerate(self.w.get_all_chats(), start=1):
+            if i > self.n_chats:
                 break
-            msg = f"Scraping contact {i + 1}/{self.n_chats}: {chat.text} [{len(self.links)} links found so far]"
-            logging.info(msg)
-            with self.lock:
-                self._progress = round(i * 100 / self.n_chats)
-                self._message = msg
+            self.folder.set_status(Status.SCRAPING,
+                                   progress=round(i * 100 / (self.n_chats + 1)),
+                                   message=f"Scraping contact {i}/{self.n_chats}: {chat.text} [{nlinks} links found]"
+                                   )
             links = list(self.w.get_links_per_chat(chat))
-            with self.lock:
-                self.links += links
-
-    def get_progress(self):
-        with self.lock:
-            return dict(status=self.status, progress=self._progress, message=self._message)
-
-    def start_scraping(self):
-        self._thread = threading.Thread(target=self.do_scrape)
-        logging.info("Starting thread")
-        self._thread.start()
+            nlinks += len(links)
+            self.folder.append_links(links)
 
 
+def start_whatsapp(**kargs) -> str:
+    """Start a new whatsapp scraper process
+    :param the IP address that the original call came from
+    :return the ID to use for contacting this process
+    """
+    id = secrets.token_urlsafe()
+    folder = FolderIPC.create(id)
+    p = WhatsappProcess(folder, **kargs)
+    p.start()
+    return id
 
 
-# Each 'session' should have one object that stays in memory
-# No, it's not the way HTTP should work, but what do you do about it.
-REGISTRY: Mapping[str, WhatsappSession] = {}
+def get_status(id: str) -> Status:
+    status = FolderIPC(id).get_status()
+    return Status[status["status"]]
 
-def start_session(id: str) -> WhatsappSession:
-    prune_sessions()
-    global REGISTRY
-    assert id not in REGISTRY
-    REGISTRY[id] = WhatsappSession()
-    return REGISTRY[id]
 
-def get_session(id: str) -> WhatsappSession:
-    global REGISTRY
-    assert id in REGISTRY
-    return REGISTRY[id]
+def get_status_details(id: str) -> dict:
+    return FolderIPC(id).get_status()
 
-def prune_sessions():
-    global REGISTRY
-    now = time.time()
-    n = len(REGISTRY)
-    for id, session in REGISTRY.items():
-        duration = now - session.started_time
-        if duration > 60*30:
-            logging.info(f"Sesssion {id} was started {duration} seconds ago, pruning")
-            if session.w is not None:
-                try:
-                    session.w.quit_browser()
-                except:
-                    logging.exception(f"Error on quitting browser in session {id}")
-            del REGISTRY[id]
-    logging.info(f"Pruning done, {len(REGISTRY)} sessions left out of {n}")
-    
+
+def get_qr(id: str) -> str:
+    return FolderIPC(id).get_qr()
+
+
+def get_result(id: str) -> str:
+    return FolderIPC(id).get_links()

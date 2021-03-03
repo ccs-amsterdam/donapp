@@ -2,7 +2,19 @@
 
 {% block content %}
 <script>
-    var res;
+     var qr_no;
+     function set_qr() {
+         if (this.readyState === 4) {
+             if (this.status !== 200) {
+                 alert("ERROR! " + this.status)
+                 return
+             }
+             var qr = JSON.parse(this.response);
+             console.log(qr);
+             document.getElementById("qr").src = "data:image/png;base64, " + qr["qr"];
+         }
+     }
+
      function status_change() {
         res = this;
         if (this.readyState === 4) {
@@ -11,14 +23,22 @@
                 return
             }
             var status = JSON.parse(this.response);
-            if (status["status"] === "READY") {
+            if (status["status"] === "SCRAPING") {
                 var id = window.location.pathname.replace(/.*\//, "")
                 var url = "/prepare/" + id;
                 window.location.href = url;
                 return
             }
-            if (status["status"] === "REFRESH") {
-                document.getElementById("qr").src = "data:image/png;base64, "+status["qr"];
+            if (status["status"] === "WAITING_SCAN") {
+                if (status["progress"] !== qr_no) {
+                    qr_no = status["progress"];
+                    var id = window.location.pathname.replace(/.*\//, "")
+                    var req = new XMLHttpRequest()
+                    req.onreadystatechange = set_qr;
+                    req.open("GET", "/qr/"+id);
+                    req.send();
+
+                }
             }
             setTimeout(check_status, 1000)
         }
@@ -34,11 +54,17 @@ check_status()
 
 
 </script>
-<p>Thanks for your willingness to donate!</p>
+<p>Bedankt dat u uw data wil doneren.</p>
 
-<p>Please scan the QR code below from your whatsapp mobile phone app (main screen, settings, whatsapp web, add):</p>
+<p>Hieronder zit u een QR code. Dit is eigenlijk de moderne variant van een streepjescode.</p>
+<p>Via uw telefoon kunt u deze scannen.</p>
+<p>Stap 1: open WhatsApp op uw telefoon.</p>
+<p>Stap 2: klik rechtsonder op instellingen.</p>
+<p>Stap 3: klik op het tweede kopje in het menu, WhatsApp Web/Desktop.</p>
+<p>Stap 4: scroll naar beneden en klik op Scan QR-code en klik op OK.</p>
+<p>Stap 5: richt de camera op onderstaande QR-code, de download begint nu.</p>
 
-<img style="width:250px; height:250px" id="qr" src="data:image/png;base64, {{qr}}" />
+<img style="width:250px; height:250px" id="qr" src="http://www.zalmhaven2030.nl/wp-content/uploads/2018/05/zandl.png" />
 
 
 {% endblock %}

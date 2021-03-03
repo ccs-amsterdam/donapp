@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-Well done! You can now <a href="/downloadfile/{{id}}">Download your file</a>
+<p>
+    Super! Uw data is klaar om gedownload te worden op uw eigen computer.
+    Deze wordt nu nog niet gedoneerd. U download ze alleen zelf.
+</p>
+<a class="btn btn-success" href="/downloadfile/{{id}}">Download your file</a>
 {% endblock %}
