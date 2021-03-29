@@ -28,10 +28,10 @@ tar xf geckodriver-v0.29.0-linux64.tar.gz
 # Run debug version
 
 ```{sh}
-FLASK_APP=donapp PATH=bin/:bin/firefox/:$PATH env/bin/flask run
+QUART_APP=donapp.server PATH=bin/:bin/firefox/:$PATH env/bin/flask run
 ```
 
 To run in headless mode:
 ```{sh}
-FLASK_APP=donapp PATH=bin:bin/firefox/:$PATH /usr/bin/xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" env/bin/flask run
+QUART_APP=donapp.server PATH=bin:bin/firefox/:$PATH /usr/bin/xvfb-run --auto-servernum --server-args="-screen 0 1920x1080x24" env/bin/flask run
 ```
