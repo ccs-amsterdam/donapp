@@ -75,6 +75,14 @@ class FolderIPC:
                 for link in links:
                     json.dump(link, f)
                     f.write("\n")
+                    
+    def make_json(self):
+        with self.result.open('r+') as f:
+            data = f.read()
+            f.seek(0)
+            f.truncate()
+            all_chats = [json.loads(jline) for jline in data.splitlines()]
+            json.dump(all_chats, f)
 
     def get_links(self) -> str:
         with self.lock:
@@ -131,6 +139,7 @@ class WhatsappProcess(Process):
             links = list(self.w.get_links_per_chat(chat))
             nlinks += len(links)
             self.folder.append_links(links)
+        self.folder.make_json()
 
 
 def start_whatsapp(**kargs) -> str:
