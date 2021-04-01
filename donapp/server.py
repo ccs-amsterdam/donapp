@@ -43,7 +43,7 @@ async def download_file(id):
     #TODO: Verify IP Address
     result = get_result(id)
     return Response(result, mimetype='application/json',
-                    headers={'Content-Disposition':'attachment;filename=whatsapp.jsonl'})
+                    headers={'Content-Disposition':'attachment;filename=whatsapp.json'})
 
 @app.route('/error/<id>')
 async def error(id):
