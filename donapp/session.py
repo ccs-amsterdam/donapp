@@ -41,7 +41,7 @@ class FolderIPC:
         folder = Path("/tmp") / id
         self.status = folder/'status.json'
         self.qr = folder/'qr.png'
-        self.result = folder/'result.jsonl'
+        self.result = folder/'result.json'
         self.info = folder/'info.json'
         self.lock = InterProcessLock(folder / 'lock.file')
 
