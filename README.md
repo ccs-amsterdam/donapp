@@ -25,7 +25,7 @@ wget https://github.com/mozilla/geckodriver/releases/download/v0.29.0/geckodrive
 tar xf geckodriver-v0.29.0-linux64.tar.gz      
 ```
 
-Make sure you have libgtk-3-0 installed, otherwise issues with Firefox might occurr
+Make sure you have libgtk-3-0 installed, otherwise issues with Firefox might occur
 ```
 sudo apt-get install -y libgtk-3-0
 ```
