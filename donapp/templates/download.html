@@ -1,9 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p>
-    Super! Uw data is klaar om gedownload te worden op uw eigen computer.
-    Deze wordt nu nog niet gedoneerd. U download ze alleen zelf.
-</p>
-<a class="btn btn-success" href="/downloadfile/{{id}}">Download your file</a>
+
+<div class="card border-secondary mt-5 w-75 mx-auto">
+    <div class="card-header">
+        Success
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">Uw data is klaar</h5>
+        <p class="card-text">
+        <p>
+            Super! Uw data is klaar om gedownload te worden op uw eigen computer.
+            Deze wordt nu nog niet gedoneerd. U download ze alleen zelf.
+        </p>
+        <a class="btn btn-success" href="/downloadfile/{{id}}">Download uw data</a>
+    </div>
+</div>
+
+
+
 {% endblock %}

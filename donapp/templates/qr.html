@@ -2,24 +2,24 @@
 
 {% block content %}
 <script>
-     var qr_no;
-     function set_qr() {
-         if (this.readyState === 4) {
-             if (this.status !== 200) {
-                 alert("ERROR! " + this.status)
-                 return
-             }
-             var qr = JSON.parse(this.response);
-             console.log(qr);
-             document.getElementById("qr").src = "data:image/png;base64, " + qr["qr"];
-         }
-     }
+    var qr_no;
+    function set_qr() {
+        if (this.readyState === 4) {
+            if (this.status !== 200) {
+                alert("ERROR! " + this.status)
+                return
+            }
+            var qr = JSON.parse(this.response);
+            console.log(qr);
+            document.getElementById("qr").src = "data:image/png;base64, " + qr["qr"];
+        }
+    }
 
-     function status_change() {
+    function status_change() {
         res = this;
         if (this.readyState === 4) {
             if (this.status !== 200) {
-                alert("ERROR! "+this.status)
+                alert("ERROR! " + this.status)
                 return
             }
             var status = JSON.parse(this.response);
@@ -35,7 +35,7 @@
                     var id = window.location.pathname.replace(/.*\//, "")
                     var req = new XMLHttpRequest()
                     req.onreadystatechange = set_qr;
-                    req.open("GET", "/qr/"+id);
+                    req.open("GET", "/qr/" + id);
                     req.send();
 
                 }
@@ -47,24 +47,106 @@
         var id = window.location.pathname.replace(/.*\//, "")
         var req = new XMLHttpRequest()
         req.onreadystatechange = status_change;
-        req.open("GET", "/qr_status/"+id);
+        req.open("GET", "/qr_status/" + id);
         req.send();
     }
-check_status()
+    check_status()
 
 
 </script>
-<p>Bedankt dat u uw data wil doneren.</p>
+<div class="card border-secondary mt-5 w-75 mx-auto">
+    <div class="card-header">
+        Voorbereiding
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">QR Code Scannen</h5>
+        <p class="card-text">
+        <p>Bedankt dat u uw data wil doneren.</p>
+        <p>Binnen enkele seconden ziet u onderaan deze pagina een QR-code verschijnen. Dit is eigenlijk de moderne
+            variant van een streepjescode.</p>
+        <p>Via uw telefoon kunt u deze scannen.</p>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Stap 1: Open WhatsApp op uw telefoon.</li>
+            <li class="list-group-item">Stap 2: iPhone: Klik rechtsonder op instellingen./Android: Tik op de drie
+                puntjes rechtsboven en kies "WhatsApp Web"
+                <button type="button" class="btn btn-light instrBtn mr-3" data-toggle="modal"
+                    data-target=".bd-instr-modal-sm"><i class="fa fa-question-circle-o fa-lg"></i></button>
+            </li>
+            <li class="list-group-item">Stap 3: iPhone: Klik op het tweede kopje in het menu, WhatsApp Web/Desktop.
+                <button type="button" class="btn btn-light instrBtn1 mr-3" data-toggle="modal"
+                    data-target=".bd-instr1-modal-sm"><i class="fa fa-question-circle-o fa-lg"></i></button>
+            </li>
+            <li class="list-group-item">Stap 4: Klik op "Koppel een apparaat"
+                <button type="button" class="btn btn-light instrBtn2 mr-3" data-toggle="modal"
+                    data-target=".bd-instr2-modal-sm"><i class="fa fa-question-circle-o fa-lg"></i></button>
+            </li>
+            <li class="list-group-item">Stap 5: Richt de camera op onderstaande QR-code, de download begint nu.</li>
+        </ul>
+        <a class="btn btn-success" href="/start/">Starten</a>
+    </div>
+</div>
 
-<p>Hieronder zit u een QR code. Dit is eigenlijk de moderne variant van een streepjescode.</p>
-<p>Via uw telefoon kunt u deze scannen.</p>
-<p>Stap 1: open WhatsApp op uw telefoon.</p>
-<p>Stap 2: klik rechtsonder op instellingen.</p>
-<p>Stap 3: klik op het tweede kopje in het menu, WhatsApp Web/Desktop.</p>
-<p>Stap 4: scroll naar beneden en klik op Scan QR-code en klik op OK.</p>
-<p>Stap 5: richt de camera op onderstaande QR-code, de download begint nu.</p>
+<img style="width:250px; height:250px" class="mx-auto d-block mt-5" id="qr" src="../static/Spinner-1s-200px-2.gif" />
 
-<img style="width:250px; height:250px" id="qr" src="http://www.zalmhaven2030.nl/wp-content/uploads/2018/05/zandl.png" />
+<div class="modal fade bd-instr-modal-sm" tabindex="-1" role="dialog" id="instrModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img class="img-fluid" alt="" src="../static/Picture1.png" style="max-width:100%;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<div class="modal fade bd-instr1-modal-sm" tabindex="-1" role="dialog" id="instr1Modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img class="img-fluid" alt="" src="../static/Picture2.png" style="max-width:100%;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<div class="modal fade bd-instr2-modal-sm" tabindex="-1" role="dialog" id="instr2Modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img class="img-fluid" alt="" src="../static/Picture3.png" style="max-width:100%;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+    crossorigin="anonymous"></script>
+
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 {% endblock %}
