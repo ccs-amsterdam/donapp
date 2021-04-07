@@ -55,39 +55,71 @@
 
 </script>
 <div class="card border-secondary mt-5 w-75 mx-auto">
-    <div class="card-header">
-        Voorbereiding
-    </div>
     <div class="card-body">
         <h5 class="card-title">QR Code Scannen</h5>
         <p class="card-text">
-        <p>Bedankt dat u uw data wil doneren.</p>
-        <p>Binnen enkele seconden ziet u onderaan deze pagina een QR-code verschijnen. Dit is eigenlijk de moderne
-            variant van een streepjescode.</p>
-        <p>Via uw telefoon kunt u deze scannen.</p>
+        <p>Bedankt dat u uw data wil doneren! Binnen enkele seconden ziet u onderaan deze pagina een QR-code
+            verschijnen. Dit is eigenlijk de moderne variant van een streepjescode. Via uw telefoon kunt u deze
+            scannen.</p>
         <ul class="list-group list-group-flush">
-            <li class="list-group-item">Stap 1: Open WhatsApp op uw telefoon.</li>
-            <li class="list-group-item">Stap 2: iPhone: Klik rechtsonder op instellingen./Android: Tik op de drie
-                puntjes rechtsboven en kies "WhatsApp Web"
-                <button type="button" class="btn btn-light instrBtn mr-3" data-toggle="modal"
-                    data-target=".bd-instr-modal-sm"><i class="fa fa-question-circle-o fa-lg"></i></button>
+            <li class="list-group-item">Stap 1: <p style="font-size: 14px;">Open WhatsApp op uw telefoon.</p>
             </li>
-            <li class="list-group-item">Stap 3: iPhone: Klik op het tweede kopje in het menu, WhatsApp Web/Desktop.
-                <button type="button" class="btn btn-light instrBtn1 mr-3" data-toggle="modal"
-                    data-target=".bd-instr1-modal-sm"><i class="fa fa-question-circle-o fa-lg"></i></button>
+            <li class="list-group-item">Stap 2:
+                <ul>
+                    <li style="font-size: 14px;">iPhone: Tik rechtsonder op instellingen <button type="button"
+                            class="btn btn-link instrBtn mr-3" data-toggle="modal" data-target=".bd-instr-modal-sm"
+                            style="color: black;"><i class="fa fa-question-circle-o fa-sm"></i></button></li>
+                    <li style="font-size: 14px;">Android: Tik op de drie puntjes rechtsboven <button type="button"
+                            class="btn btn-link instrBtn4 mr-3" data-toggle="modal" data-target=".bd-instr4-modal-sm"
+                            style="color: black;"><i class="fa fa-question-circle-o fa-sm"></i></button>
+                    </li>
+                </ul>
             </li>
-            <li class="list-group-item">Stap 4: Klik op "Koppel een apparaat"
-                <button type="button" class="btn btn-light instrBtn2 mr-3" data-toggle="modal"
-                    data-target=".bd-instr2-modal-sm"><i class="fa fa-question-circle-o fa-lg"></i></button>
+            <li class="list-group-item">Stap 3:
+                <ul>
+                    <li style="font-size: 14px;">iPhone: Tik op het tweede kopje in het menu, "WhatsApp Web/Desktop"
+                        <button type="button" class="btn btn-link instrBtn1 mr-3" data-toggle="modal"
+                            data-target=".bd-instr1-modal-sm" style="color: black;"><i
+                                class="fa fa-question-circle-o fa-sm"></i></button>
+                    </li>
+                    <li style="font-size: 14px;">Android: Tik op het derde kopje in het menu, "Whatsapp Web"<button
+                            type="button" class="btn btn-link instrBtn5 mr-3" data-toggle="modal"
+                            data-target=".bd-instr5-modal-sm" style="color: black;"><i
+                                class="fa fa-question-circle-o fa-sm"></i></button>
+                    </li>
+                </ul>
             </li>
-            <li class="list-group-item">Stap 5: Richt de camera op onderstaande QR-code, de download begint nu.</li>
+            <li class="list-group-item">Stap 4:
+                <ul>
+                    <li style="font-size: 14px;">iPhone: Tik op "Koppel een apparaat"<button type="button"
+                            class="btn btn-link instrBtn2 mr-3" data-toggle="modal" data-target=".bd-instr2-modal-sm"
+                            style="color: black;"><i class="fa fa-question-circle-o fa-sm"></i></button></li>
+                    <li style="font-size: 14px;">Android: Tik op "Een apparaat koppelen"<button type="button"
+                            class="btn btn-link instrBtn6 mr-3" data-toggle="modal" data-target=".bd-instr6-modal-sm"
+                            style="color: black;"><i class="fa fa-question-circle-o fa-sm"></i></button>
+                    </li>
+                </ul>
+            </li>
+            <li class="list-group-item">Stap 5:
+                <ul>
+                    <li style="font-size: 14px;">iPhone: Richt de camera op onderstaande QR-code, de download begint
+                        nu.<button type="button" class="btn btn-link instrBtn3 mr-3" data-toggle="modal"
+                            data-target=".bd-instr3-modal-sm" style="color: black;"><i
+                                class="fa fa-question-circle-o fa-sm"></i></button></li>
+                    <li style="font-size: 14px;">Android: Richt de camera op onderstaande QR-code, de download begint
+                        nu.<button type="button" class="btn btn-link instrBtn7 mr-3" data-toggle="modal"
+                            data-target=".bd-instr7-modal-sm" style="color: black;"><i
+                                class="fa fa-question-circle-o fa-sm"></i></button>
+                    </li>
+                </ul>
+            </li>
         </ul>
-        <a class="btn btn-success" href="/start/">Starten</a>
     </div>
 </div>
 
-<img style="width:250px; height:250px" class="mx-auto d-block mt-5" id="qr" src="../static/Spinner-1s-200px-2.gif" />
+<img style="width:250px; height:250px" class="mx-auto d-block mt-2" id="qr" src="../static/Spinner-1s-200px-2.gif" />
 
+<!----------------------------------------------Instruction modals----------------------------------------------------------------->
 <div class="modal fade bd-instr-modal-sm" tabindex="-1" role="dialog" id="instrModal">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -134,6 +166,96 @@
             </div>
             <div class="modal-body">
                 <img class="img-fluid" alt="" src="../static/Picture3.png" style="max-width:100%;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-instr3-modal-sm" tabindex="-1" role="dialog" id="instr3Modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img class="img-fluid" alt="" src="../static/Picture4.png" style="max-width:100%;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-instr4-modal-sm" tabindex="-1" role="dialog" id="instr4Modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img class="img-fluid" alt="" src="../static/Picture5.png" style="max-width:100%;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-instr5-modal-sm" tabindex="-1" role="dialog" id="instr5Modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img class="img-fluid" alt="" src="../static/Picture6.png" style="max-width:100%;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-instr6-modal-sm" tabindex="-1" role="dialog" id="instr6Modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img class="img-fluid" alt="" src="../static/Picture7.png" style="max-width:100%;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-instr7-modal-sm" tabindex="-1" role="dialog" id="instr7Modal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img class="img-fluid" alt="" src="../static/Picture8.png" style="max-width:100%;">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
