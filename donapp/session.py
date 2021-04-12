@@ -103,8 +103,10 @@ class WhatsappProcess(Process):
             self.wait_for_qr()
             self.do_scrape()
             self.folder.set_status(Status.DONE)
+            self.quit()
         except Exception as e:
             self.folder.set_status(Status.ERROR, message=f"{type(e)}: {e}")
+            self.quit()
             raise
 
     def wait_for_qr(self):
@@ -140,6 +142,9 @@ class WhatsappProcess(Process):
             nlinks += len(links)
             self.folder.append_links(links)
         self.folder.make_json()
+     
+    def quit(self):
+        self.w.browser.quit()
 
 
 def start_whatsapp(**kargs) -> str:
