@@ -20,12 +20,15 @@
             console.log(status)
             self.set_progress(status["progress"], status["message"])
             var id = window.location.pathname.replace(/.*\//, "")
+	    var urlParams = new URLSearchParams(window.location.search);
+            var sid = urlParams.get('sid')
+
             if (status["status"] === "ERROR") {
-                window.location.href = "/error/" + id;;
+                window.location.href = "/error/" + id + "?sid=" + sid;;
                 return
             }
             if (status["status"] === "DONE") {
-                window.location.href = "/download/" + id;;
+                window.location.href = "/download/" + id + "?sid=" + sid;;
                 return
             }
             setTimeout(check_status, 1000)
@@ -35,6 +38,8 @@
     function check_status() {
         var id = window.location.pathname.replace(/.*\//, "")
         var req = new XMLHttpRequest()
+	var urlParams = new URLSearchParams(window.location.search);
+        var sid = urlParams.get('sid')
         req.onreadystatechange = status_change;
         req.open("GET", "/scrape_status/" + id);
         req.send();

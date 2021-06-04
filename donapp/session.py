@@ -99,13 +99,16 @@ class WhatsappProcess(Process):
 
     def run(self):
         try:
-            self.w = Whatsapp(screenshot_folder="/tmp")
+            self.w = Whatsapp(screenshot_folder="/tmp", whitelist="/home/felicia/donapp/whitelist.txt")
             self.wait_for_qr()
             self.do_scrape()
             self.folder.set_status(Status.DONE)
+            self.quit()
         except Exception as e:
             self.folder.set_status(Status.ERROR, message=f"{type(e)}: {e}")
+            self.quit()
             raise
+        
 
     def wait_for_qr(self):
         last_qr = None
@@ -136,10 +139,13 @@ class WhatsappProcess(Process):
                                    progress=round(i * 100 / (self.n_chats + 1)),
                                    message=f"Scraping contact {i}/{self.n_chats}: {chat.text} [{nlinks} links found]"
                                    )
-            links = list(self.w.get_links_per_chat(chat))
+            links = list(self.w.get_links_per_chat(chat, i))
             nlinks += len(links)
             self.folder.append_links(links)
         self.folder.make_json()
+
+    def quit(self):
+        self.w.browser.quit()
 
 
 def start_whatsapp(**kargs) -> str:

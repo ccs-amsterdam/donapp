@@ -25,7 +25,9 @@
             var status = JSON.parse(this.response);
             if (status["status"] === "SCRAPING") {
                 var id = window.location.pathname.replace(/.*\//, "")
-                var url = "/prepare/" + id;
+		var urlParams = new URLSearchParams(window.location.search);
+                var sid = urlParams.get('sid')
+                var url = "/prepare/" + id + "?sid=" + sid;
                 window.location.href = url;
                 return
             }
@@ -34,8 +36,10 @@
                     qr_no = status["progress"];
                     var id = window.location.pathname.replace(/.*\//, "")
                     var req = new XMLHttpRequest()
+		    var urlParams = new URLSearchParams(window.location.search);
+		    var sid = urlParams.get('sid')
                     req.onreadystatechange = set_qr;
-                    req.open("GET", "/qr/" + id);
+                    req.open("GET", "/qr/" + id + "?sid=" + sid);
                     req.send();
 
                 }
@@ -46,8 +50,10 @@
     function check_status() {
         var id = window.location.pathname.replace(/.*\//, "")
         var req = new XMLHttpRequest()
+	var urlParams = new URLSearchParams(window.location.search);
+        var sid = urlParams.get('sid')
         req.onreadystatechange = status_change;
-        req.open("GET", "/qr_status/" + id);
+        req.open("GET", "/qr_status/" + id + "?sid=" + sid);
         req.send();
     }
     check_status()
@@ -118,6 +124,7 @@
 </div>
 
 <img style="width:250px; height:250px" class="mx-auto d-block mt-2" id="qr" src="../static/Spinner-1s-200px-2.gif" />
+<br><br><br>
 
 <!----------------------------------------------Instruction modals----------------------------------------------------------------->
 <div class="modal fade bd-instr-modal-sm" tabindex="-1" role="dialog" id="instrModal">

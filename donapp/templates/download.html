@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+\1;95;0c{% extends "base.html" %}
 
 {% block content %}
 
@@ -11,12 +11,26 @@
         <p class="card-text">
         <p>
             Super! Uw data is klaar om gedownload te worden op uw eigen computer.
-            Deze wordt nu nog niet gedoneerd. U download ze alleen zelf.
+            Deze wordt nu nog niet gedoneerd. U download ze alleen zelf.<br>
+	    U kunt nu de verbinding tussen uw telefoon en onze server verbreken. Weet u niet hoe? Zie de rubriek "Afmelden vanaf je telefoon" <a target="_blank" href = "https://faq.whatsapp.com/web/download-and-installation/how-to-log-in-or-out/?lang=nl">hier</a>
         </p>
-        <a class="btn btn-success" href="/downloadfile/{{id}}">Download uw data</a>
+        <a class="btn btn-success" id="getdata" onclick="showInfo()" href="{{url_for('download_file', id=id, sid=sid)}}">Download uw data</a>
+	<div id="newinfo" style='display:none;'>
+	  <br><br>
+	<p id ='infotext'>Bedankt! U kunt nu overgaan tot het uploaden van dit bestand op ons donatieplatform. Door op "Data doneren" te klikken, opent de website voor het controleren en uploaden van uw data in een nieuw venster.</p>
+	<a class="btn btn-success" id="donatedata" target="_blank" href="https://digitale-voetsporen.nl/whatsapp/upload?sid={{sid}}">Data doneren</a></div>
     </div>
 </div>
-
+<script>
+function showInfo() {
+  var x = document.getElementById("newinfo");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}  
+</script>
 
 
 {% endblock %}
